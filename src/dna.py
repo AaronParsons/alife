@@ -1,5 +1,11 @@
 import ast
 
+MAX_RECUR = 100
+
+# XXX will this work if ast changes?
+ast_map = {}
+for i,k in enumerate(ast.__dict__.keys()): ast_map[k] = i
+
 def addtagval(dna, tag, val):
     if not dna.has_key(tag):
         dna[tag] = [val]
@@ -10,6 +16,7 @@ def addtagval(dna, tag, val):
         return (tag, len(dna[tag])-1)
 
 def ast2dna(n, dna, recur=0):
+    if recur > MAX_RECUR: raise RuntimeError('Exceeded recursion depth of %d' % recur)
     tag = type(n).__name__
     indent = '   ' * recur
     if not isinstance(n, ast.AST): return addtagval(dna, tag, n)
@@ -22,6 +29,7 @@ def ast2dna(n, dna, recur=0):
     return addtagval(dna, tag, val)
 
 def dna2ast(dna, tag='Module', num=0, recur=0):
+    if recur > MAX_RECUR: raise RuntimeError('Exceeded recursion depth of %d' % recur)
     #print indent, tag, num, dna[tag][num]
     val = dna[tag][num]
     #indent = '   ' * recur

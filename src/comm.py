@@ -1,9 +1,10 @@
-import socket, select
-import cPickle, StringIO, hashlib, threading
+import socket, select, time, random
+import cPickle, threading
 import dna, unparse
 
 PORT = 8088
-MAXBUF = 4096
+MAX_PACKETLEN = 8192
+MAX_PACKETNUM = 200
 
 class UdpTx:
     def __init__(self, ip, port=PORT):
@@ -13,17 +14,16 @@ class UdpTx:
         self._sock.sendto(data, self._dest)
 
 class DnaTx(UdpTx):
-    def send_dna(self, dna):
-        data = cPickle.dumps(dna)
-        assert(len(data) <= MAXBUF)
+    def send_dna(self, d):
+        data = cPickle.dumps(d, -1)
+        assert(len(data) <= MAX_PACKETLEN)
         self.send(data)
 
 class UdpRx:
-    def __init__(self, host, port=PORT, maxbuf=MAXBUF):
+    def __init__(self, host, port=PORT):
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._sock.setblocking(0)
         self._host = (host,port)
-        self.maxbuf = maxbuf
         self._run = False
     def _listen(self):
         self._sock.bind(self._host)
@@ -31,7 +31,7 @@ class UdpRx:
         while self._run:
             ready = select.select([self._sock], [], [], .1)
             if ready[0]:
-                data, addr = self._sock.recvfrom(self.maxbuf)
+                data, addr = self._sock.recvfrom(MAX_PACKETLEN)
                 self.packet_handler(data, addr)
     def packet_handler(self, data, addr):
         print addr, len(data)
@@ -46,12 +46,14 @@ class DnaRx(UdpRx):
     data_buf = []
     def packet_handler(self, data, addr):
         self.data_buf.insert(0, data)
+        self.data_buf = self.data_buf[:MAX_PACKETNUM]
     def iter_dna(self):
         while self._run or len(self.data_buf) > 0:
             if len(self.data_buf) == 0:
                 time.sleep(.01)
                 continue
             # XXX need to error check this eventually
-            yield cPickle.loads(self.data_buf.pop())
+            #yield cPickle.loads(self.data_buf.pop())
+            yield cPickle.loads(self.data_buf.pop(random.randrange(len(self.data_buf))))
         return
 
