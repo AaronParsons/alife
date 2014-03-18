@@ -1,10 +1,13 @@
-import ast
+import ast, unparse, StringIO
 
 MAX_RECUR = 100
 
 # XXX will this work if ast changes?
 ast_map = {}
-for i,k in enumerate(ast.__dict__.keys()): ast_map[k] = i
+#for i,k in enumerate(ast.__dict__.keys()): ast_map[k] = i
+#for i,k in enumerate(__builtins__.__dict__.keys()): ast_map[k] = i
+#print __builtins__.keys()
+for i,k in enumerate(__builtins__.keys()): ast_map[k] = i
 
 def addtagval(dna, tag, val):
     if not dna.has_key(tag):
@@ -48,3 +51,9 @@ def dna2ast(dna, tag='Module', num=0, recur=0):
         rv = val
     return rv
 
+def dna2txt(dna, tag='Module', num=0):
+    a = dna2ast(dna, tag=tag, num=num)
+    f = StringIO.StringIO()
+    unparse.Unparser(a, f)
+    txt = f.getvalue(); f.close()
+    return txt

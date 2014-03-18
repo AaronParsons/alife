@@ -16,14 +16,14 @@ def subkeys(dna, k, n):
 
 def mutate(d):
     #return 
-    ks,ns = random_pair(d)
-    #ks,ns = 'Module',0
-    #ks,ns = 'FunctionDef',0
-    if ks == 'my_id': return
+    if random.random() < .5:
+        ks,ns = 'Module',0
+    else:
+        ks,ns = random_pair(d)
+        if ks == 'my_id': return
     subks = subkeys(d,ks,ns)
-    pair1 = random.choice(subks)
-    #pair1 = ('str',1)
-    #pair1 = ('body',4)
+    if random.random() < .5: pair1 = random_pair(d, 'body')
+    else: pair1 = random.choice(subks)
     if random.random() < .5:
     #if random.random() < 0:
         pair2 = random_pair(d)
@@ -77,11 +77,14 @@ def babble(d, k, n):
     elif type(item) is tuple:
         return random_pair(d)
     elif type(item) is str:
-        new_item = random.choice(dna.ast_map.keys())
         if random.random() < .5:
-            new_item = list(new_item)
-            random.shuffle(new_item)
-            new_item = ''.join(new_item)
+            new_item = random.choice(dna.ast_map.keys())
+        else:
+            new_item = random.choice(d['str'])
+        #if random.random() < .5:
+        #    new_item = list(new_item)
+        #    random.shuffle(new_item)
+        #    new_item = ''.join(new_item)
         return new_item
     elif type(item) is int:
         return random.randrange(-10,10)

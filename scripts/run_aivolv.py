@@ -1,16 +1,13 @@
 #! /usr/bin/env python
 import aivolv as ai
-import StringIO, hashlib, os, ctypes, threading, random, sys
+import hashlib, os, ctypes, threading, random, sys
 
 MAX_CRITTERS = 1024
 tempfile = 'eden/%s.py'
 
 class Critter:
     def __init__(self, dna, tempfile=tempfile):
-        a = ai.dna.dna2ast(dna)
-        f = StringIO.StringIO()
-        ai.unparse.Unparser(a, f)
-        self.txt = f.getvalue(); f.close()
+        self.txt = ai.dna.dna2txt(dna)
         self.my_id = hashlib.sha224(self.txt).hexdigest()[:10]
         self.filename = tempfile % self.my_id
     def _run(self):
@@ -21,9 +18,9 @@ class Critter:
             env = {
                 '__file__':self.filename, 
                 '__name__':'__main__', 
-                'my_id':self.my_id,
+                #'my_id':self.my_id,
             }
-            execfile(self.filename, {'__file__':self.filename, '__name__':'__main__', 'my_id':self.my_id})
+            execfile(self.filename, env)
         #except(RuntimeError):
         #    print 'Killed %s' % self.my_id
         except:
@@ -47,23 +44,28 @@ class Critter:
 
 rx = ai.comm.DnaRx('localhost')
 rx.start()
-ai.eve.run()
+ai.eve.run(ai.eve.__file__[:-1])
+print len(rx.data_buf)
 
 critters = []
 log = open('log.txt','a')
 try:
+    print len(rx.data_buf)
     for cnt, dna in enumerate(rx.iter_dna()):
         critters = [c for c in critters if c.thread.isAlive()]
         while len(critters) > MAX_CRITTERS:
             c = random.choice(critters)
             c.interrupt()
             c.join()
-        try: parent_id = dna['my_id']
+            critters = [c for c in critters if c.thread.isAlive()]
+        try:
+            txt = ai.dna.dna2txt(dna)
+            parent_id = hashlib.sha224(txt).hexdigest()[:10]
         except(KeyError,TypeError): continue
         #ai.mutate.mutate(dna)
-        if random.random() < .2:
+        if random.random() < .3:
             try: ai.mutate.mutate(dna)
-            except(TypeError): pass
+            except(TypeError,KeyError): pass
         #try:
         #    if random.random() < .1: ai.mutate.mutate(dna)
         #except: pass
@@ -71,9 +73,10 @@ try:
             c = Critter(dna)
             critters.append(c)
             c.run()
-            print cnt, parent_id, '->', c.my_id
-            log.write('%10d %s %s\n' % (cnt, parent_id, c.my_id))
-            log.flush()
+            if parent_id != c.my_id: 
+                print cnt, parent_id, '->', c.my_id
+                log.write('%10d %10s %10s\n' % (cnt, parent_id, c.my_id))
+                log.flush()
         except: pass
         #except(SyntaxError,AttributeError,RuntimeError,TypeError): pass
         if len(rx.data_buf) == 0:
