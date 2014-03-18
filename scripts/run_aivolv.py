@@ -53,7 +53,7 @@ log = open('log.txt','a')
 
 def logit(s, verbose=True):
     if verbose: print s
-    log.write(s)
+    log.write(s + '\n')
     log.flush()
 
 try:
@@ -81,7 +81,7 @@ try:
             critters.append(c)
             c.run()
             if parent_id != c.my_id: 
-                logit('%10d %10s %10s\n' % (cnt, parent_id, c.my_id))
+                logit('%10d %10s %10s' % (cnt, parent_id, c.my_id))
         except: pass
         #except(SyntaxError,AttributeError,RuntimeError,TypeError): pass
         if len(rx.data_buf) == 0:
