@@ -24,7 +24,8 @@ class Critter:
         #except(RuntimeError):
         #    print 'Killed %s' % self.my_id
         except:
-            print 'Died: %s' % self.my_id
+            #print 'Died: %s' % self.my_id
+            pass
     def run(self):
         self.thread = threading.Thread(target=self._run)
         self.thread.start()
@@ -49,6 +50,12 @@ print len(rx.data_buf)
 
 critters = []
 log = open('log.txt','a')
+
+def logit(s, verbose=True):
+    if verbose: print s
+    log.write(s)
+    log.flush()
+
 try:
     print len(rx.data_buf)
     for cnt, dna in enumerate(rx.iter_dna()):
@@ -74,9 +81,7 @@ try:
             critters.append(c)
             c.run()
             if parent_id != c.my_id: 
-                print cnt, parent_id, '->', c.my_id
-                log.write('%10d %10s %10s\n' % (cnt, parent_id, c.my_id))
-                log.flush()
+                logit('%10d %10s %10s\n' % (cnt, parent_id, c.my_id))
         except: pass
         #except(SyntaxError,AttributeError,RuntimeError,TypeError): pass
         if len(rx.data_buf) == 0:
