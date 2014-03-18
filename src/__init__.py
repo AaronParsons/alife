@@ -1,2 +1,2 @@
 import dna, comm, mutate, unparse
-import eve
+import eve, critter
