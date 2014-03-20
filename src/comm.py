@@ -43,10 +43,13 @@ class UdpRx:
         self._rx_thread.join()
 
 class DnaRx(UdpRx):
+    lock = threading.Lock()
     data_buf = []
     def packet_handler(self, data, addr):
+        self.lock.acquire()
         self.data_buf.insert(0, data)
         self.data_buf = self.data_buf[:MAX_PACKETNUM]
+        self.lock.release()
     def iter_dna(self):
         while self._run or len(self.data_buf) > 0:
             if len(self.data_buf) == 0:
@@ -54,6 +57,9 @@ class DnaRx(UdpRx):
                 continue
             # XXX need to error check this eventually
             #yield cPickle.loads(self.data_buf.pop())
-            yield cPickle.loads(self.data_buf.pop(random.randrange(len(self.data_buf))))
+            self.lock.acquire()
+            pkt = self.data_buf.pop(random.randrange(min(MAX_PACKETNUM,len(self.data_buf))))
+            self.lock.release()
+            yield cPickle.loads(pkt)
         return
 
