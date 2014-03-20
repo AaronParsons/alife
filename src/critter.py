@@ -1,5 +1,9 @@
 import dna
-import hashlib, ctypes, threading
+import hashlib, ctypes
+
+THREADING = True
+if THREADING: import threading
+else: from multiprocessing import Process
 
 tempfile = 'eden/%s.py'
 
@@ -23,12 +27,16 @@ class Critter:
             execfile(self.filename, env)
         except: pass
     def run(self):
-        self.thread = threading.Thread(target=self._run)
+        if THREADING: self.thread = threading.Thread(target=self._run)
+        else: self.thread = Process(target=self._run)
         self.thread.start()
     def join(self):
         self.thread.join()
+    def is_alive(self):
+        if THREADING: return self.thread.isAlive()
+        else: return self.thread.is_alive()
     def interrupt(self):
-        if not self.thread.isAlive(): return
+        if not self.is_alive(): return
         res = ctypes.pythonapi.PyThreadState_SetAsyncExc(
                 ctypes.c_long(self.thread.ident),
                 ctypes.py_object(RuntimeError))
