@@ -1,4 +1,24 @@
 import ast, unparse, StringIO
+#import cPickle
+import marshal
+'''
+dna has the following structure:
+{k0:[i0, i1, i2, ...], k1:[i0, i1, ...], ...}
+where each item 'i' can be 
+1) a primitive (str,int,float,...),
+2) a pair (k,n) where 'k' is a key in the dictionary and 'n' is an integer, or
+3) a list of pairs.
+'''
+
+def serialize(dna):
+    #return cPickle.dumps(dna, -1)
+    return marshal.dumps(dna)
+    #return repr(dna)
+
+def deserialize(pkt):
+    #return cPickle.loads(pkt)
+    return marshal.loads(pkt)
+    #return eval(pkt)
 
 MAX_RECUR = 100
 

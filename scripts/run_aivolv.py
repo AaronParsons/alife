@@ -2,7 +2,9 @@
 import aivolv as ai
 import random
 from multiprocessing import Process, Queue, Lock, Value
+import os 
 
+MAX_QUEUELEN = 100
 MAX_CRITTERS = 1024
 NUM_BIOS = 10
 
@@ -28,7 +30,7 @@ class BioSphere:
     def __init__(self, name, max_critters=MAX_CRITTERS):
         self.name = name
         self.max = max_critters
-        self.dna_q = Queue()
+        self.dna_q = Queue(MAX_QUEUELEN) # important to limit Queue size to avoid memory overrun
         self.thread = None
         self.critters = []
     def send_dna(self, d):
@@ -83,18 +85,21 @@ print len(rx.data_buf)
 bios = [BioSphere('bio%02d'%i) for i in range(NUM_BIOS)]
 for b in bios: b.run()
 
+i = 0
 try:
-    for i,dna in enumerate(rx.iter_dna()):
-        #logit('Sending one to bio%02d' % (i%NUM_BIOS))
-        bios[i % NUM_BIOS].send_dna(dna)
+    for dna in rx.iter_dna():
+#        #logit('Sending one to bio%02d' % (i%NUM_BIOS))
+        i = (i + 1) % NUM_BIOS
+        bios[i].send_dna(dna) 
         #if len(rx.data_buf) == 0:
         #    logit('Warning: starting loop with empty buffer.')
+    #import IPython; IPython.embed()
 #except(SyntaxError):
 except(KeyboardInterrupt):
     pass
 finally:
     for b in bios: b.stop()
-    rx.quit()
+    rx.stop()
     log.close()
 for b in bios: 
     b.thread.terminate()

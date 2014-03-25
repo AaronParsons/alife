@@ -1,5 +1,5 @@
 import socket, select, time, random
-import cPickle, threading
+import threading
 import dna, unparse
 
 PORT = 8088
@@ -15,7 +15,7 @@ class UdpTx:
 
 class DnaTx(UdpTx):
     def send_dna(self, d):
-        data = cPickle.dumps(d, -1)
+        data = dna.serialize(d)
         assert(len(data) <= MAX_PACKETLEN)
         self.send(data)
 
@@ -38,7 +38,7 @@ class UdpRx:
     def start(self):
         self._rx_thread = threading.Thread(target=self._listen)
         self._rx_thread.start()
-    def quit(self):
+    def stop(self):
         self._run = False
         self._rx_thread.join()
 
@@ -55,11 +55,9 @@ class DnaRx(UdpRx):
             if len(self.data_buf) == 0:
                 time.sleep(.01)
                 continue
-            # XXX need to error check this eventually
-            #yield cPickle.loads(self.data_buf.pop())
             self.lock.acquire()
-            pkt = self.data_buf.pop(random.randrange(min(MAX_PACKETNUM,len(self.data_buf))))
+            pkt = self.data_buf.pop(random.randrange(len(self.data_buf)))
             self.lock.release()
-            yield cPickle.loads(pkt)
+            yield dna.deserialize(pkt)
         return
 
