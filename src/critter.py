@@ -16,6 +16,7 @@ class Critter:
         self.my_id = hashtxt(self.txt)
         self.filename = tempfile % self.my_id
         self._interrupt = False
+        self.thread = None
     def _run(self):
         try:
             env = {

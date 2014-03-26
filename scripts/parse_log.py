@@ -17,13 +17,17 @@ cid2pid = {}
 for t,pid,cid  in zip(d['time'], d['pid'],d['cid']):
     cid2pid[cid] = pid
     ids[pid] = ids.get(pid,(t,len(ids))) # keep the earliest time this pid appeared
+    #ids[cid] = ids.get(cid,(t,len(ids))) # keep the earliest time this pid appeared
     lasttime[pid] = t
+    lasttime[cid] = t
 for k in cid2pid.keys():
     if not ids.has_key(k): del(cid2pid[k])
 
 def back_prop(ids, k):
     try: pk = cid2pid[k]
-    except(KeyError): return
+    except(KeyError):
+        print 'No Parent:', k
+        return
     t,c = ids[k]
     pt,pc = ids[pk]
     mpc = max(c,pc)
