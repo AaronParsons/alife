@@ -77,3 +77,9 @@ def dna2txt(dna, tag='Module', num=0):
     unparse.Unparser(a, f)
     txt = f.getvalue(); f.close()
     return txt
+
+def txt2dna(txt):
+    a = ast.parse(txt)
+    d = {}
+    ast2dna(a, d)
+    return d

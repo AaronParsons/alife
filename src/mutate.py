@@ -20,27 +20,19 @@ def mutate(d):
         ks,ns = 'Module',0
     else:
         ks,ns = random_pair(d)
-        if ks == 'my_id': return
     subks = subkeys(d,ks,ns)
     if random.random() < .5: pair1 = random_pair(d, 'body')
     else: pair1 = random.choice(subks)
     if random.random() < .5:
-    #if random.random() < 0:
         pair2 = random_pair(d)
     else:
         k,n = pair1
         item = babble(d, k, n)
-        #print k, d[k][n]
-        #print k, item
-        #d[k][n] = item
         d[k].append(item)
         pair2 = (k,len(d[k])-1)
-        #print d[pair2[0]][pair2[1]]
-    #ks,ns = random_pair(d)
-    #print ks, ns, pair1, pair2, len(d[k])
-    #print '>', d[k]
-    d[ks][ns] = swap(d, pair1, pair2, ks, ns)
-    #print d[ks][ns]
+    #d[ks][ns] = swap(d, pair1, pair2, ks, ns)
+    k,n = swap(d, pair1, pair2, ks, ns)
+    d[ks][ns] = d[k][n] 
     #import unparse, StringIO
     #a = dna.dna2ast(d)
     #f = StringIO.StringIO()
@@ -50,6 +42,7 @@ def mutate(d):
     #import IPython; IPython.embed()
 
 def swap(d,pair1,pair2,k,n):
+    if (k,n) == pair1: return pair2
     item = d[k][n]
     if type(item) is list:
         new_item = [swap(d,pair1,pair2,_k,_n) for _k,_n in item]
@@ -72,7 +65,10 @@ def babble(d, k, n):
         if len(item) > 0 and random.random() < .5:
             item.pop(random.randrange(len(item)))
         else:
-            item.insert(random.randrange(len(item)+1), random_pair(d))
+            if len(item) == 0 or random.random() < .5: item.insert(random.randrange(len(item)+1), random_pair(d))
+            else:
+                if random.random() < .5: item.insert(random.randrange(len(item)+1), random.choice(item))
+                else: random.shuffle(item)
         return item 
     elif type(item) is tuple:
         return random_pair(d)

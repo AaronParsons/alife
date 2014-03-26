@@ -21,13 +21,13 @@ class TestComm(unittest.TestCase):
         rx.stop()
         for d in rx.iter_dna():
             self.assertEqual(dna, d)
-    def test_memory(self):
-        rx = comm.DnaRx('localhost')
-        rx.start()
-        tx = comm.DnaTx('localhost')
-        dna = {1:2,3:4}
-        while True:
-            tx.send_dna(dna)
+    #def test_memory(self):
+    #    rx = comm.DnaRx('localhost')
+    #    rx.start()
+    #    tx = comm.DnaTx('localhost')
+    #    dna = {1:2,3:4}
+    #    while True:
+    #        tx.send_dna(dna)
 
 if __name__ == '__main__':
     unittest.main()

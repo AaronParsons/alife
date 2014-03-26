@@ -24,23 +24,25 @@ class UdpRx:
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._sock.setblocking(0)
         self._host = (host,port)
-        self._run = False
+        self._quit = threading.Event()
     def _listen(self):
-        self._sock.bind(self._host)
-        self._run = True
-        while self._run:
+        while not self._quit.is_set():
             ready = select.select([self._sock], [], [], .1)
             if ready[0]:
                 data, addr = self._sock.recvfrom(MAX_PACKETLEN)
                 self.packet_handler(data, addr)
+        self._sock.close()
     def packet_handler(self, data, addr):
         print addr, len(data)
     def start(self):
+        self._quit.clear()
+        self._sock.bind(self._host)
         self._rx_thread = threading.Thread(target=self._listen)
         self._rx_thread.start()
     def stop(self):
-        self._run = False
+        self._quit.set()
         self._rx_thread.join()
+        #self._sock.close()
 
 class DnaRx(UdpRx):
     lock = threading.Lock()
@@ -51,7 +53,7 @@ class DnaRx(UdpRx):
         self.data_buf = self.data_buf[:MAX_PACKETNUM]
         self.lock.release()
     def iter_dna(self):
-        while self._run or len(self.data_buf) > 0:
+        while not self._quit.is_set() or len(self.data_buf) > 0:
             if len(self.data_buf) == 0:
                 time.sleep(.01)
                 continue
