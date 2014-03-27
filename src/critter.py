@@ -1,9 +1,9 @@
 import dna
 import hashlib, ctypes
 
-THREADING = True
+THREADING = False
 if THREADING: import threading
-else: from multiprocessing import Process
+else: import multiprocessing as mp
 
 TEMPFILE = 'eden/%s.py'
 
@@ -24,13 +24,13 @@ class Critter:
                 '__name__':'__main__',
             }
             execfile(self.filename, env)
-        #except(RuntimeError): pass # this is a normal exit mode for interruption
-        except: pass # this is a normal exit mode for interruption
+        except(RuntimeError): pass # this is a normal exit mode for interruption
+        except: pass
     def run(self):
         self._interrupt = False
         f = open(self.filename, 'w'); f.write(self.txt); f.close()
         if THREADING: self.thread = threading.Thread(target=self._run, name=self.my_id)
-        else: self.thread = Process(target=self._run)
+        else: self.thread = mp.Process(target=self._run, name=self.my_id)
         self.thread.daemon = True
         self.thread.start()
     def join(self):
@@ -42,14 +42,17 @@ class Critter:
     def interrupt(self):
         if not self.is_alive(): return
         self._interrupt = True
-        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(
-                ctypes.c_long(self.thread.ident),
-                ctypes.py_object(RuntimeError))
-        if res > 1:
-            # "if it returns a number greater than one, you're in trouble,
-            # and you should call it again with exc=NULL to revert the effect"
-            ctypes.pythonapi.PyThreadState_SetAsyncExc(self.thread.ident, 0)
-            raise SystemError("PyThreadState_SetAsyncExc failed")
+        if THREADING:
+            res = ctypes.pythonapi.PyThreadState_SetAsyncExc(
+                    ctypes.c_long(self.thread.ident),
+                    ctypes.py_object(RuntimeError))
+            if res > 1:
+                # "if it returns a number greater than one, you're in trouble,
+                # and you should call it again with exc=NULL to revert the effect"
+                ctypes.pythonapi.PyThreadState_SetAsyncExc(self.thread.ident, 0)
+                raise SystemError("PyThreadState_SetAsyncExc failed")
+        else:
+            self.thread.terminate()
     #def __del__(self):
     #    self.interrupt()
     #    self.join()

@@ -40,7 +40,8 @@ try:
         except(mpq.Full):
             #logit('# bio%02d is full' % 1)
             pass
-        if random.random() < .0001:
+        #if random.random() < .0001:
+        if False:
             logit('# Destroying ' + b.name )
             b = random.choice(bios)
             b.stop()
@@ -54,7 +55,7 @@ except(KeyboardInterrupt):
     pass
 finally:
     for b in bios: b.stop()
-    for b in bios: b.join()
+    #for b in bios: b.join()
     rx.stop()
     logging_q.close()
     #log_lock.release()

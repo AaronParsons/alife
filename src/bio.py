@@ -6,6 +6,7 @@ import random, signal
 
 MAX_QUEUE_LEN = 100
 MAX_CRITTERS = 512
+#MAX_CRITTERS = 5
 
 class BioSphere:
     def __init__(self, name, logging_q, max_critters=MAX_CRITTERS, max_qlen=MAX_QUEUE_LEN):
@@ -28,6 +29,7 @@ class BioSphere:
             try: pid = critter.hashtxt(dna.dna2txt(d))
             except(KeyError,TypeError): continue
             if random.random() < .5:
+            #if False:
                 try: mutate.mutate(d)
                 except(TypeError,KeyError): pass
             try:
@@ -35,12 +37,12 @@ class BioSphere:
                 self.critters.append(c)
                 c.run()
                 if pid != c.my_id:
-                    #logit('%10s %10d %10s %10s' % (self.name, cnt, pid, c.my_id))
                     self.logging_q.put((self.name, pid, c.my_id))
             except: pass
     def clean(self, critters, maxcrit):
         critters = [c for c in critters if c.is_alive()]
         while len(critters) > self.max:
+            #print 'cleaning', len(critters), len(self.purgatory)
             c = random.choice(critters)
             c.interrupt()
             self.purgatory.append(c)
@@ -54,6 +56,7 @@ class BioSphere:
     def run(self):
         self._quit.clear()
         self.thread = mp.Process(target=self._run)
+        #self.thread.daemon = True
         self.thread.start()
     def stop(self):
         self._quit.set()
