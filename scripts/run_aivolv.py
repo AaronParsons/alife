@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-import aivolv as ai
+import alife as ai
 import random
 import multiprocessing as mp
 import multiprocessing.queues as mpq

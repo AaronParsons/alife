@@ -1,5 +1,5 @@
 import unittest
-from aivolv import comm
+from alife import comm
 
 class TestComm(unittest.TestCase):
     def test_local(self):

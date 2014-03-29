@@ -2,16 +2,16 @@
 from distutils.core import setup
 import os, glob
 
-__version__ = '0.0.1'
+__version__ = '0.1.0'
 
-setup(name = 'aivolv',
+setup(name = 'alife',
     version = __version__,
     description = __doc__,
     long_description = __doc__,
     license = 'GPL',
     author = 'Aaron Parsons',
     author_email = 'aparsons@berkeley.edu',
-    package_dir = {'aivolv':'src'},
-    packages = ['aivolv'],
+    package_dir = {'alife':'src'},
+    packages = ['alife'],
     scripts = glob.glob('scripts/*'),
 )

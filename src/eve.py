@@ -1,5 +1,5 @@
 #import dna, comm
-import aivolv as ai
+import alife as ai
 import ast
 import time
 

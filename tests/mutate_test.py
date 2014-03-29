@@ -1,6 +1,6 @@
 import unittest, ast, copy, StringIO
-import aivolv as ai
-from aivolv import mutate
+import alife as ai
+from alife import mutate
 
 prog = '''
 a = 1
