@@ -1,4 +1,6 @@
 #! /usr/bin/env python
+'''This script reads in a log.txt file and removes all files
+from the directory 'eden' that did not generate an entry in log.txt'''
 import numpy as n
 import sys, os
 

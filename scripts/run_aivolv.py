@@ -1,8 +1,28 @@
 #! /usr/bin/env python
-import alife as ai
+#import alife as ai
+import aivolv as ai
 import random
 import multiprocessing as mp
 import multiprocessing.queues as mpq
+
+def tail(f, lines=100, bufsize=1024):
+    f.seek(0, 2)
+    bytes = f.tell()
+    size = lines
+    block = -1
+    data = []
+    while size > 0 and bytes > 0:
+        if (bytes - bufsize > 0):
+            f.seek(block*bufsize, 2)
+            data.append(f.read(bufsize))
+        else:
+            f.seek(0,0)
+            data.append(f.read(bytes))
+        linesFound = data[-1].count('\n')
+        size -= linesFound
+        bytes -= bufsize
+        block -= 1
+    return ''.join(data).splitlines()[-lines:]
 
 NUM_BIOS = 10
 
@@ -15,7 +35,18 @@ def logit(s, verbose=True):
 
 rx = ai.comm.DnaRx('localhost')
 rx.start()
-ai.eve.run(ai.eve.__file__[:-1])
+if False: # start alife with the original 'eve' critter
+    ai.eve.run(ai.eve.__file__[:-1])
+else: # restart where alife terminated with the last N entries in the log
+    log_tmp = open('log.txt','r')
+    seed_critters = [L.split() for L in tail(log_tmp)]
+    seed_critters = [L[2] for L in seed_critters if len(L) > 3]
+    log_tmp.close()
+    for i in xrange(10):
+        crit = random.choice(seed_critters)
+        logit('# Seeding %s' % crit)
+        ai.eve.run('eden/%s.py' % crit)
+
 print len(rx.data_buf)
 
 bios = [ai.bio.BioSphere('bio%02d'%i, logging_q) for i in range(NUM_BIOS)]
@@ -54,13 +85,16 @@ try:
 except(KeyboardInterrupt):
     pass
 finally:
-    for b in bios: b.stop()
+    for b in bios: 
+        print 'Stopping', b.name, b.is_alive(), len(b.critters), len(b.purgatory), self.dna_q.full()
+        for c in b.critters: print c.my_id
+        b.stop()
     #for b in bios: b.join()
     rx.stop()
     logging_q.close()
     #log_lock.release()
     #cnt_lock.release()
     #log.close()
-    #import IPython; IPython.embed()
+    import IPython; IPython.embed()
 
 
