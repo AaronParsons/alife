@@ -9,7 +9,8 @@ img = n.zeros((8192,512), dtype=n.int)
 def get_log_data(logfile):
     #d = n.loadtxt(logfile, dtype={'names': ('bio', 'time', 'pid', 'cid'), 'formats': ('S10', 'i4', 'S10', 'S10')})
     #d = n.loadtxt(logfile, dtype={'names': ('pid', 'cid'), 'formats': ('S10', 'S10')}, usecols=(2,3))
-    d = n.array([L.split()[2:] for L in open(logfile).readlines()])
+    d = [L.split() for L in open(logfile).readlines() if not L.startswith('#')]
+    d = n.array([L[2:] for L in d if len(L) > 3])
     return d
 
 print 'Reading', sys.argv[-1]
@@ -22,7 +23,10 @@ kid2pid,pid2kid = {}, {}
 orphans = {}
 #for t,pid,cid  in zip(d['time'], d['pid'],d['cid']):
 parent = None
+tmax = 0
 for t,(pid,kid) in enumerate(d):
+    if t < tmax: t += tmax
+    else: tmax = t
     x = t / 800
     if not ids.has_key(pid):
         if not kid2pid.has_key(pid): # this is an orphan

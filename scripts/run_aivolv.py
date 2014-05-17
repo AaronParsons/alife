@@ -86,7 +86,7 @@ except(KeyboardInterrupt):
     pass
 finally:
     for b in bios: 
-        print 'Stopping', b.name, b.is_alive(), len(b.critters), len(b.purgatory), self.dna_q.full()
+        print 'Stopping', b.name, b.is_alive(), len(b.critters), len(b.purgatory), b.dna_q.full()
         for c in b.critters: print c.my_id
         b.stop()
     #for b in bios: b.join()

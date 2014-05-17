@@ -7,7 +7,7 @@ import sys, os
 tempfile = 'eden/%s.py'
 
 def get_log_data(logfile):
-    d = n.array([L.split()[2:] for L in open(logfile).readlines()])
+    d = n.array([L.split()[2:] for L in open(logfile).readlines() if not L.startswith('#')])
     return d
 
 print 'Reading', sys.argv[-1]
