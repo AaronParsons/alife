@@ -27,7 +27,7 @@ tmax = 0
 for t,(pid,kid) in enumerate(d):
     if t < tmax: t += tmax
     else: tmax = t
-    x = t / 800
+    x = t / 1000
     if not ids.has_key(pid):
         if not kid2pid.has_key(pid): # this is an orphan
             orphans[pid] = None
