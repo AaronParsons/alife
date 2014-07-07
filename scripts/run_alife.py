@@ -35,7 +35,7 @@ def logit(s, verbose=True):
 
 rx = ai.comm.DnaRx('localhost')
 rx.start()
-if False: # start alife with the original 'eve' critter
+if True: # start alife with the original 'eve' critter
     ai.eve.run(ai.eve.__file__[:-1])
 else: # restart where alife terminated with the last N entries in the log
     log_tmp = open('log.txt','r')
