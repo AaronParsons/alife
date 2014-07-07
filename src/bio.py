@@ -34,8 +34,8 @@ class BioSphere:
                 except(TypeError,KeyError): pass
             try:
                 c = critter.Critter(d)
+                c.run() # run has to precede append, otherwise not threadsafe
                 self.critters.append(c)
-                c.run()
                 if pid != c.my_id:
                     self.logging_q.put((self.name, pid, c.my_id))
             except: pass

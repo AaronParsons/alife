@@ -1,7 +1,10 @@
 import dna
 import hashlib, ctypes
 
-THREADING = False
+# Using threading (as opposed to processes) for critters seems to be faster, and doesn't
+# suffer from opening too many files (Processes direct stdin/out to /dev/null and have to open it).
+# However, threads are hard to terminate, and the code for getting around that is very hacky.
+THREADING = True
 if THREADING: import threading
 else: import multiprocessing as mp
 
