@@ -1,4 +1,5 @@
-import random, copy, dna
+import random, copy
+from . import dna
 
 def random_pair(dna, k=None):
     if k is None: k = random.choice(dna.keys())

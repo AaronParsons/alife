@@ -1,4 +1,4 @@
-import dna
+from . import dna
 import hashlib, ctypes
 
 # Using threading (as opposed to processes) for critters seems to be faster, and doesn't
@@ -11,7 +11,7 @@ else: import multiprocessing as mp
 TEMPFILE = 'eden/%s.py'
 
 def hashtxt(txt):
-    return hashlib.sha224(txt).hexdigest()[:10]
+    return hashlib.sha224(txt.encode('utf-8')).hexdigest()[:10]
 
 class Critter:
     def __init__(self, d, tempfile=TEMPFILE):

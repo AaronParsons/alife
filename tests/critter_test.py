@@ -16,6 +16,7 @@ class TestCritter(unittest.TestCase):
     def tearDown(self):
         os.remove(self.tempfile % self.critter.my_id)
     def test_interrupt(self):
+        import IPython; IPython.embed()
         self.critter.run()
         self.assertTrue(self.critter.is_alive())
         self.assertTrue(os.path.exists(self.tempfile % self.critter.my_id))

@@ -1,4 +1,4 @@
-import dna, critter, mutate
+from . import dna, critter, mutate
 import multiprocessing as mp
 import multiprocessing.queues as mpq
 import random, signal

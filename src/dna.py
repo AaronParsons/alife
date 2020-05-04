@@ -1,4 +1,6 @@
-import ast, unparse, StringIO
+import ast, astunparse
+#from io import StringIO
+#from . import unparse
 #import cPickle
 import marshal
 '''
@@ -30,7 +32,7 @@ ast_map = {}
 for i,k in enumerate(__builtins__.keys()): ast_map[k] = i
 
 def addtagval(dna, tag, val):
-    if not dna.has_key(tag):
+    if tag not in dna:
         dna[tag] = [val]
         return (tag, 0)
     try: return (tag, dna[tag].index(val))
@@ -39,7 +41,8 @@ def addtagval(dna, tag, val):
         return (tag, len(dna[tag])-1)
 
 def ast2dna(n, dna, recur=0):
-    if recur > MAX_RECUR: raise RuntimeError('Exceeded recursion depth of %d' % recur)
+    if recur > MAX_RECUR:
+        raise RuntimeError('Exceeded recursion depth of %d' % recur)
     tag = type(n).__name__
     indent = '   ' * recur
     if not isinstance(n, ast.AST): return addtagval(dna, tag, n)
@@ -52,7 +55,8 @@ def ast2dna(n, dna, recur=0):
     return addtagval(dna, tag, val)
 
 def dna2ast(dna, tag='Module', num=0, recur=0):
-    if recur > MAX_RECUR: raise RuntimeError('Exceeded recursion depth of %d' % recur)
+    if recur > MAX_RECUR:
+        raise RuntimeError('Exceeded recursion depth of %d' % recur)
     #print indent, tag, num, dna[tag][num]
     val = dna[tag][num]
     #indent = '   ' * recur
@@ -73,10 +77,11 @@ def dna2ast(dna, tag='Module', num=0, recur=0):
 
 def dna2txt(dna, tag='Module', num=0):
     a = dna2ast(dna, tag=tag, num=num)
-    f = StringIO.StringIO()
-    unparse.Unparser(a, f)
-    txt = f.getvalue(); f.close()
-    return txt
+    return astunparse.unparse(a)
+    #f = StringIO()
+    #unparse.Unparser(a, f)
+    #txt = f.getvalue(); f.close()
+    #return txt
 
 def txt2dna(txt):
     a = ast.parse(txt)
