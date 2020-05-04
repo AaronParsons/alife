@@ -1,5 +1,6 @@
 import unittest
 from alife import comm
+from alife.dna import DNA
 
 class TestComm(unittest.TestCase):
     def test_local(self):
@@ -13,14 +14,14 @@ class TestComm(unittest.TestCase):
         rx.stop()
         self.assertEqual(buf[0].decode('utf-8'), 'test')
     def test_dna(self):
-        dna = {1:2,3:4}
+        dna = DNA(dna_dict={1:2,3:4})
         rx = comm.DnaRx('localhost')
         rx.start()
         tx = comm.DnaTx('localhost')
         tx.send_dna(dna)
         rx.stop()
-        for d in rx.iter_dna():
-            self.assertEqual(dna, d)
+        for rx_dna in rx.iter_dna():
+            self.assertEqual(dna._dna, rx_dna._dna)
     #def test_memory(self):
     #    rx = comm.DnaRx('localhost')
     #    rx.start()

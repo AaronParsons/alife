@@ -4,23 +4,21 @@ from alife import dna
 
 test_prog = \
 '''import time
-print("hi")
 while True: time.sleep(.1)
 '''
 
-test_dna = dna.txt2dna(test_prog)
+test_dna = dna.DNA(txt=test_prog)
 
 class TestCritter(unittest.TestCase):
     def setUp(self):
-        self.tempfile = '%s.py'
-        self.critter = critter.Critter(test_dna, tempfile=self.tempfile)
+        self.critter = critter.Critter(test_dna)
+        self.tempfile = self.critter.filename
     def tearDown(self):
-        os.remove(self.tempfile % self.critter.my_id)
+        os.remove(self.tempfile)
     def test_interrupt(self):
-        import IPython; IPython.embed()
         self.critter.run()
         self.assertTrue(self.critter.is_alive())
-        self.assertTrue(os.path.exists(self.tempfile % self.critter.my_id))
+        self.assertTrue(os.path.exists(self.tempfile))
         self.critter.interrupt()
         self.critter.join()
         self.assertFalse(self.critter.is_alive())

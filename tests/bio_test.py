@@ -15,8 +15,8 @@ evil_prog = \
 
 class TestBio(unittest.TestCase):
     def setUp(self):
-        self.test_dna = dna.txt2dna(test_prog)
-        self.evil_dna = dna.txt2dna(evil_prog)
+        self.test_dna = dna.DNA(txt=test_prog)
+        self.evil_dna = dna.DNA(txt=evil_prog)
         self.q = mp.Queue()
     def tearDown(self):
         self.q.close()
