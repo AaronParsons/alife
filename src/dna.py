@@ -1,7 +1,4 @@
 import ast, astunparse
-#from io import StringIO
-#from . import unparse
-#import cPickle
 import marshal
 '''
 dna has the following structure:
@@ -13,12 +10,10 @@ where each item 'i' can be
 '''
 
 def serialize(dna):
-    #return cPickle.dumps(dna, -1)
     return marshal.dumps(dna)
     #return repr(dna)
 
 def deserialize(pkt):
-    #return cPickle.loads(pkt)
     return marshal.loads(pkt)
     #return eval(pkt)
 
@@ -78,10 +73,6 @@ def dna2ast(dna, tag='Module', num=0, recur=0):
 def dna2txt(dna, tag='Module', num=0):
     a = dna2ast(dna, tag=tag, num=num)
     return astunparse.unparse(a)
-    #f = StringIO()
-    #unparse.Unparser(a, f)
-    #txt = f.getvalue(); f.close()
-    #return txt
 
 def txt2dna(txt):
     a = ast.parse(txt)

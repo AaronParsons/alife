@@ -1,6 +1,6 @@
 import socket, select, time, random
 import threading
-from . import dna#, unparse
+from . import dna
 
 PORT = 8088
 MAX_PACKETLEN = 8192

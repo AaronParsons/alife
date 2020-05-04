@@ -34,13 +34,6 @@ def mutate(d):
     #d[ks][ns] = swap(d, pair1, pair2, ks, ns)
     k,n = swap(d, pair1, pair2, ks, ns)
     d[ks][ns] = d[k][n] 
-    #import unparse, StringIO
-    #a = dna.dna2ast(d)
-    #f = StringIO.StringIO()
-    #unparse.Unparser(a, f)
-    #txt = f.getvalue(); f.close()
-    #print txt
-    #import IPython; IPython.embed()
 
 def swap(d,pair1,pair2,k,n):
     if (k,n) == pair1: return pair2
