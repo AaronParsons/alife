@@ -1,11 +1,11 @@
-import unittest, ast, copy, StringIO
+import unittest, ast, astunparse, copy
 import alife as ai
 from alife import mutate
 
 prog = '''
 a = 1
 b = 2
-print a + b
+print(a + b)
 '''
 
 class TestMutate(unittest.TestCase):
@@ -17,7 +17,7 @@ class TestMutate(unittest.TestCase):
     def test_random_pair(self):
         p1 = mutate.random_pair(self.dna)
         self.assertTrue(type(p1) is tuple)
-        self.assertTrue(self.dna.has_key(p1[0]))
+        self.assertTrue(p1[0] in self.dna)
         self.assertGreater(len(self.dna[p1[0]]), p1[1])
         p2 = mutate.random_pair(self.dna, k='Module')
         self.assertEqual(p2[0], 'Module')
@@ -36,23 +36,19 @@ class TestMutate(unittest.TestCase):
         self.assertEqual(d['n'][2:], [('int',1),('int',1)])
         self.assertEqual(len(d['Module']), 2)
         d = copy.deepcopy(self.dna)
-        d['Print'][0] = mutate.swap(d, ('str',0),('str',1), 'Print',0)
+        d['Expr'][0] = mutate.swap(d, ('str',0),('str',1), 'Expr',0)
         a = ai.dna.dna2ast(d)
-        f = StringIO.StringIO()
-        ai.unparse.Unparser(a, f)
-        txt = f.getvalue(); f.close()
+        txt = astunparse.unparse(a)
         lines = txt.splitlines()
         self.assertNotEqual(lines[-1].find('b + b'), -1)
         self.assertNotEqual(lines[-3].find('a = 1'), -1)
     def test_babble(self):
         d = copy.deepcopy(self.dna)
-        d['body'][0] = mutate.babble(d, 'body')
-        print d['body'][0]
+        d['body'][0] = mutate.babble(d, 'body', 0)
+        print(d['body'][0])
         a = ai.dna.dna2ast(d)
-        f = StringIO.StringIO()
-        ai.unparse.Unparser(a, f)
-        txt = f.getvalue(); f.close()
-        print txt
+        txt = astunparse.unparse(a)
+        print(txt)
 
 if __name__ == '__main__':
     unittest.main()

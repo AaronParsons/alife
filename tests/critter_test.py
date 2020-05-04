@@ -4,6 +4,7 @@ from alife import dna
 
 test_prog = \
 '''import time
+print("hi")
 while True: time.sleep(.1)
 '''
 

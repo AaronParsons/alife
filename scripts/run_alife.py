@@ -29,14 +29,14 @@ NUM_BIOS = 10
 logging_q = mp.Queue()
 log = open('log.txt','a')
 def logit(s, verbose=True):
-    if verbose: print s
+    if verbose: print(s)
     log.write(s + '\n')
     log.flush()
 
 rx = ai.comm.DnaRx('localhost')
 rx.start()
 if True: # start alife with the original 'eve' critter
-    ai.eve.run(ai.eve.__file__[:-1])
+    ai.eve.run(ai.eve.__file__)
 else: # restart where alife terminated with the last N entries in the log
     log_tmp = open('log.txt','r')
     seed_critters = [L.split() for L in tail(log_tmp)]
@@ -47,7 +47,7 @@ else: # restart where alife terminated with the last N entries in the log
         logit('# Seeding %s' % crit)
         ai.eve.run('eden/%s.py' % crit)
 
-print len(rx.data_buf)
+print(len(rx.data_buf))
 
 bios = [ai.bio.BioSphere('bio%02d'%i, logging_q) for i in range(NUM_BIOS)]
 for b in bios: b.run()
@@ -56,7 +56,7 @@ cnt = 0
 i = 0
 try:
     for dna in rx.iter_dna():
-        #logit('Sending one to bio%02d' % (i%NUM_BIOS))
+        logit('Sending one to bio%02d' % (i%NUM_BIOS))
         while not logging_q.empty():
             bname,pid,cid = logging_q.get()
             logit('%10s %10d %10s %10s' % (bname, cnt, pid, cid))
@@ -69,7 +69,7 @@ try:
         try:
             bios[i].send_dna(dna) 
         except(mpq.Full):
-            #logit('# bio%02d is full' % 1)
+            logit('# bio%02d is full' % 1)
             pass
         #if random.random() < .0001:
         if False:
@@ -78,16 +78,16 @@ try:
             b.stop()
             b.join()
             #b.terminate()
-        #if len(rx.data_buf) == 0:
-        #    logit('Warning: starting loop with empty buffer.')
+        if len(rx.data_buf) == 0:
+            logit('Warning: starting loop with empty buffer.')
     #import IPython; IPython.embed()
 #except(SyntaxError):
 except(KeyboardInterrupt):
     pass
 finally:
     for b in bios: 
-        print 'Stopping', b.name, b.is_alive(), len(b.critters), len(b.purgatory), b.dna_q.full()
-        for c in b.critters: print c.my_id
+        print('Stopping', b.name, b.is_alive(), len(b.critters), len(b.purgatory), b.dna_q.full())
+        for c in b.critters: print(c.my_id)
         b.stop()
     #for b in bios: b.join()
     rx.stop()

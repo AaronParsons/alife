@@ -2,8 +2,8 @@ import random, copy
 from . import dna
 
 def random_pair(dna, k=None):
-    if k is None: k = random.choice(dna.keys())
-    while len(dna[k]) == 0: k = random.choice(dna.keys())
+    if k is None: k = random.choice(list(dna.keys()))
+    while len(dna[k]) == 0: k = random.choice(list(dna.keys()))
     return (k, random.randrange(len(dna[k])))
 
 def subkeys(dna, k, n):
@@ -68,7 +68,7 @@ def babble(d, k, n):
         return random_pair(d)
     elif type(item) is str:
         if random.random() < .5:
-            new_item = random.choice(dna.ast_map.keys())
+            new_item = random.choice(list(dna.ast_map.keys()))
         else:
             new_item = random.choice(d['str'])
         #if random.random() < .5:

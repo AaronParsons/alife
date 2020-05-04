@@ -9,9 +9,9 @@ class TestComm(unittest.TestCase):
         rx.packet_handler = packet_handler
         rx.start()
         tx = comm.UdpTx('localhost')
-        tx.send('test')
+        tx.send('test'.encode('utf-8'))
         rx.stop()
-        self.assertEqual(buf[0], 'test')
+        self.assertEqual(buf[0].decode('utf-8'), 'test')
     def test_dna(self):
         dna = {1:2,3:4}
         rx = comm.DnaRx('localhost')

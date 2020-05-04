@@ -26,7 +26,8 @@ class Critter:
                 '__file__':self.filename,
                 '__name__':'__main__',
             }
-            execfile(self.filename, env)
+            with open(self.filename, 'rb') as f:
+                exec(compile(f.read(), self.filename, 'exec'), env)
         except(RuntimeError): pass # this is a normal exit mode for interruption
         except: pass
     def run(self):

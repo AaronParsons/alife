@@ -11,8 +11,6 @@ class UdpTx:
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._dest = (ip, port)
     def send(self, data):
-        if type(data) is not bytes:
-            data = data.encode('utf-8')
         self._sock.sendto(data, self._dest)
 
 class DnaTx(UdpTx):
@@ -32,7 +30,7 @@ class UdpRx:
             ready = select.select([self._sock], [], [], .1)
             if ready[0]:
                 data, addr = self._sock.recvfrom(MAX_PACKETLEN)
-                self.packet_handler(data.decode('utf-8'), addr)
+                self.packet_handler(data, addr)
         self._sock.close()
     def packet_handler(self, data, addr):
         print(addr, len(data))
