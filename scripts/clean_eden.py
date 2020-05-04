@@ -10,7 +10,7 @@ def get_log_data(logfile):
     d = n.array([L.split()[2:] for L in open(logfile).readlines() if not L.startswith('#')])
     return d
 
-print 'Reading', sys.argv[-1]
+print('Reading', sys.argv[-1])
 d = get_log_data(sys.argv[-1])
 
 ids = {}

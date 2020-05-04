@@ -13,10 +13,10 @@ def get_log_data(logfile):
     d = n.array([L[2:] for L in d if len(L) > 3])
     return d
 
-print 'Reading', sys.argv[-1]
+print('Reading', sys.argv[-1])
 d = get_log_data(sys.argv[-1])
 
-print 'linking...'
+print('linking...')
 max_ids = {None:0}
 ids, id_list = {None:img.shape[1]/2}, []
 kid2pid,pid2kid = {}, {}
