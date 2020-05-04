@@ -34,8 +34,7 @@ class Critter:
                 '__file__': self.filename,
                 '__name__': '__main__',
             }
-            with open(self.filename, 'rb') as f:
-                exec(compile(f.read(), self.filename, 'exec'), env)
+            exec(compile(self.txt, self.filename, 'exec'), env)
         except(RuntimeError):
             # this is a normal exit mode for interruption
             pass

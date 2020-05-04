@@ -56,7 +56,7 @@ cnt = 0
 i = 0
 try:
     for dna in rx.iter_dna():
-        logit('Sending one to bio%02d' % (i%NUM_BIOS))
+        #logit('Sending one to bio%02d' % (i%NUM_BIOS))
         while not logging_q.empty():
             bname,pid,cid = logging_q.get()
             logit('%10s %10d %10s %10s' % (bname, cnt, pid, cid))
@@ -69,7 +69,7 @@ try:
         try:
             bios[i].send_dna(dna) 
         except(mpq.Full):
-            logit('# bio%02d is full' % 1)
+            #logit('# bio%02d is full' % 1)
             pass
         #if random.random() < .0001:
         if False:
@@ -79,7 +79,8 @@ try:
             b.join()
             #b.terminate()
         if len(rx.data_buf) == 0:
-            logit('Warning: starting loop with empty buffer.')
+            #logit('Warning: starting loop with empty buffer.')
+            pass
     #import IPython; IPython.embed()
 #except(SyntaxError):
 except(KeyboardInterrupt):
